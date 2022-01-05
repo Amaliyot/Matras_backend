@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-// const routes = require("./routes/routes");
 const postgres = require("./modules/postgres/pg");
 const customErrorMiddleware = require("./middlewares/customErrorMiddleware");
+const Router = require("./routes");
+const errorHandler = require("./helpers/errorHandler");
 
 async function server(port) {
 	try {
@@ -22,11 +23,12 @@ async function server(port) {
 		app.use(express.json());
 		app.use(express.urlencoded({ extended: true }));
 
+		app.use("/v1", Router)
+		app.use(errorHandler)
+
 	} catch (error) {
 		console.log("SERVER ERROR", error);
-	} finally {
-		// routes(app);
-	}
+	} 
 }
 
 module.exports = server
