@@ -17,6 +17,7 @@ module.exports = class Validations {
 
     static async ProductValidation(data, CustomError){
         return await JOI.object({
+            photos: JOI.array().error(new CustomError(400, "Size is invalid")),
             name: JOI.string().required().max(32).error(new CustomError(400, "Category name is invalid")),
             price: JOI.number().required().error(new CustomError(400, "Price is invalid")),
             weight: JOI.number().required().error(new CustomError(400, "Weight is invalid")),
