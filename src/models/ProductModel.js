@@ -30,6 +30,14 @@ module.exports = async (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             allowNull: false
         },
+        product_isNew: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false
+        },
+        product_isActive: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false
+        },
         product_hasDiscount: {
             type: Sequelize.BOOLEAN,
             allowNull: false
