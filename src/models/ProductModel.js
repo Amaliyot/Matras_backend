@@ -10,6 +10,10 @@ module.exports = async (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
+        product_description: {
+            type: Sequelize.TEXT(1024),
+            allowNull: false
+        },
         product_price: {
             type: Sequelize.BIGINT,
             allowNull: false
