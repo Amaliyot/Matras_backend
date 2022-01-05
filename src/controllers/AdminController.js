@@ -25,6 +25,7 @@ module.exports = class AdminController{
             const data = await ProductValidation(req.body, res.error)
 
             const new_product = await req.db.categories.create({
+                photos: data.photos,
                 product_name: data.name,
                 product_price: data.price,
                 product_weight: data.weight,
