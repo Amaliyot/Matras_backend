@@ -14,6 +14,10 @@ module.exports = async (sequelize, Sequelize) => {
             type: Sequelize.TEXT(1024),
             allowNull: false
         },
+        product_photos: {
+            type: Sequelize.ARRAY(Sequelize.STRING),
+            allowNull: true
+        },
         product_price: {
             type: Sequelize.BIGINT,
             allowNull: false
