@@ -1,5 +1,5 @@
-module.exports = (sequelize, Sequelize) => {
-    sequelize.define("customers", {
+module.exports = async (sequelize, Sequelize) => {
+    return await sequelize.define("customers", {
         customer_id: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV4(),
