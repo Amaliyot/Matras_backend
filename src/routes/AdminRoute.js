@@ -1,9 +1,16 @@
-const { AdminCreateProductPostController, AdminCreateCategoryPostController, AdminLoginPostController } = require("../controllers/AdminController");
+const {LoginPostController} = require("../controllers/Admin/AdminController");
+const {CreateCategoryPostController} = require("../controllers/Admin/CategoryController");
+const {CreateProductPostController} = require("../controllers/Admin/ProductController");
 
 const AdminRouter = require("express").Router();
 
-AdminRouter.post("/login", AdminLoginPostController)
-AdminRouter.post("/categories/new", AdminCreateCategoryPostController)
-AdminRouter.post("/products/new", AdminCreateProductPostController)
+const fileUpload = require("express-fileupload");
+const configFileUpload = {
+	safeFileNames: false,
+};
+
+AdminRouter.post("/login", LoginPostController)
+AdminRouter.post("/categories/new", CreateCategoryPostController)
+AdminRouter.post("/products/new", fileUpload(configFileUpload), CreateProductPostController)
 
 module.exports = AdminRouter
