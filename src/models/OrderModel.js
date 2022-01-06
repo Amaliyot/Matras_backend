@@ -7,7 +7,7 @@ module.exports = async (sequelize, Sequelize) => {
             allowNull: false
         },
         order_serial_id: {
-            type: DataTypes.INTEGER,
+            type: Sequelize.INTEGER,
             unique: true,
             primaryKey: true,
             autoIncrement: true
