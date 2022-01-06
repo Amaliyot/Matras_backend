@@ -25,7 +25,7 @@ module.exports = async function postgres(){
         db.products = await ProductModel(sequelize, Sequelize)
         db.technologies = await TechnologyModel(sequelize, Sequelize)
 
-        await init(db)
+        // await init(db)
         await relations(db)
 
         await sequelize.sync({ force: false })
