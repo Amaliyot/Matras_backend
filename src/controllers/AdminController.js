@@ -4,6 +4,16 @@ const { createToken } = require("../modules/jwt")
 
 
 module.exports = class AdminController{
+    static async CategoryEditController (req, res, next){
+        try {
+            const data = await CategoryValidation(req.body, res.error)
+
+            
+
+        } catch (error) {
+            next(error)
+        }
+    }
 
     static async AdminLoginPostController (req, res, next){
         try {
