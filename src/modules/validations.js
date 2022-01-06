@@ -28,6 +28,7 @@ module.exports = class Validations {
             isActive: JOI.boolean().required().error(new CustomError(400, "Status is invalid")),
             hasDiscount: JOI.boolean().required().error(new CustomError(400, "Discount status is invalid")),
             discountPrice: JOI.number().required().error(new CustomError(400, "Discount price is invalid")),
+            category: JOI.string().required().error(new CustomError(400, "Category is invalid")),
         }).validateAsync(data)
     }
 }
