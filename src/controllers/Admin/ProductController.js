@@ -65,12 +65,12 @@ module.exports = class ProductController{
             for (let file of files){
                  let file_name = file.md5 + getExtension(file.name)
                 const f = await req.db.photos.create({
-                    photo_name: file_name,
+                    photo_name: file.md5,
                     photo_ext: getExtension(file.name),
                     product_id: new_product.dataValues.product_id
                 })
 
-                await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'productPhotos', f.dataValues.photo_name))
+                await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'productPhotos', file_name))
             }
 
             res.status(201).json({
