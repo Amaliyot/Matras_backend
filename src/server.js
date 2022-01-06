@@ -23,8 +23,8 @@ async function server(port) {
 		app.use(express.json());
 		app.use(express.urlencoded({ extended: true }));
 
-		app.use("/v1", Router)
 		app.use(errorHandler)
+		app.use("/v1", Router)
 
 	} catch (error) {
 		console.log("SERVER ERROR", error);

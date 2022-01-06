@@ -5,31 +5,38 @@ const { createToken } = require("../modules/jwt")
 
 module.exports = class AdminController{
 
-    static async login (req, res){
+    static async AdminLoginPostController (req, res, next){
         try {
-            const data = await AdminSignInValidation(req.body);
-    
-            if(!data) throw new res.error("Data is not found");
+            const data = await AdminSignInValidation(req.body, res.error);
+
+            console.log(data);
     
             const admin = await req.db.admins.findOne({
                 admin_login: data.login
             })
     
             if(!admin) throw new res.error("Admin is not found")
+
+            console.log(admin);
     
-            if(!(await compareHash(data.password, admin.password))){
+            if(!(compareHash(data.password, admin.admin_password))){
                 throw new Error("Password is incorrect")
             } 
     
-            res.cookie("token", await createToken({
+            let token = await createToken({
                 _id: admin.admin_id
-            })).redirect("/admin/orders")
+            });
+
+            res.status(201).json({
+				ok: true,
+				message: "Logged successfully",
+				data: {
+					token,
+				},
+			});
     
         } catch (error) {
-            console.log("LOGIN ERROR" + error);
-            res.redirect("/admin",{
-                error
-            })
+            next(error)
         }
     }
 

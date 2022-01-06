@@ -12,7 +12,7 @@ const sequelize = new Sequelize(process.env.DB_URL, {
     logging: false
 })
 
-module.exports = async function postgres(){
+async function postgres(){
     try {
         await sequelize.authenticate();
 
@@ -29,7 +29,11 @@ module.exports = async function postgres(){
         await init(db)
 
         await sequelize.sync({ force: false })
+
+        return db
     } catch (error) {
         console.log("DATABASE_ERROR", error);
     }
 }
+
+module.exports = postgres;
