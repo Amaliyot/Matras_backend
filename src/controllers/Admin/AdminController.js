@@ -1,4 +1,4 @@
-const { CategoryValidation, ProductValidation, AdminSignInValidation } = require("../../modules/validations")
+const { AdminSignInValidation } = require("../../modules/validations")
 const { compareHash } = require("../../modules/bcrypt")
 const { createToken } = require("../../modules/jwt")
 

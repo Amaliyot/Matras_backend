@@ -4,6 +4,7 @@ const CategoryModel = require('../../models/CategoryModel')
 const CustomerModel = require('../../models/CustomerModel')
 const OrderModel = require('../../models/OrderModel')
 const ProductModel = require('../../models/ProductModel')
+const ProductPhotoModel = require("../../models/ProductPhotoModel")
 const TechnologyModel = require('../../models/TechnologyModel')
 const init = require("./init")
 const relations = require("./relations")
@@ -24,9 +25,10 @@ async function postgres(){
         db.orders = await OrderModel(sequelize, Sequelize)
         db.products = await ProductModel(sequelize, Sequelize)
         db.technologies = await TechnologyModel(sequelize, Sequelize)
+        db.photos = await ProductPhotoModel(sequelize, Sequelize)
 
-        await relations(db)
         await init(db)
+        await relations(db)
 
         await sequelize.sync({ force: false })
 

@@ -11,7 +11,7 @@ module.exports = class Validations {
     static async CategoryValidation(data, CustomError){
         return await JOI.object({
             name: JOI.string().required().max(32).error(new CustomError(400, "Category name is invalid")),
-            status: JOI.boolean().required().error(new CustomError(400, "Status is invalid"))
+            status: JOI.boolean().required().valid("active", "inactive").error(new CustomError(400, "Status is invalid"))
         }).validateAsync(data)
     }
 
