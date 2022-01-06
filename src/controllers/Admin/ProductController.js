@@ -16,8 +16,9 @@ module.exports = class ProductController{
 
             if(!category) throw new res.error(400, "Category not found")
 
-            const new_product = await req.db.categories.create({
+            const new_product = await req.db.products.create({
                 product_name: data.name,
+                product_description: data.description,
                 product_price: data.price,
                 product_weight: data.weight,
                 product_size: data.size,
