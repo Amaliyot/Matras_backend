@@ -1,4 +1,27 @@
+const { CategoryValidation } = require("../../modules/validations");
+
 module.exports = class CategoryController{
+    static async RemoveCategoryController(req, res, next){
+        try {
+            const data = await CategoryValidation(req.body, res.error)
+
+            const isCategory = await req.db.categories.findOne({
+                category_id: req.params.id
+            })
+
+            if(!isCategory) throw new res.error(400, "Category is not found")
+            
+            await req.db.categories.destroy({
+                where: {
+                    category_id: req.params.id
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+
+    }
+//------------------------------------------------------------------------------------
     static async EditCategoryPostController(req, res, next){
         try {
             const data = await CategoryValidation(req.body, res.error)
