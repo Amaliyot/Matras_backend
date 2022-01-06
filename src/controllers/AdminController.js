@@ -1,6 +1,40 @@
-const { CategoryValidation, ProductValidation } = require("../modules/validations")
+const { CategoryValidation, ProductValidation, AdminSignInValidation } = require("../modules/validations")
+const { compareHash } = require("../modules/bcrypt")
+const { createToken } = require("../modules/jwt")
+
 
 module.exports = class AdminController{
+
+    static async login (req, res){
+        try {
+            const data = await AdminSignInValidation(req.body);
+    
+            if(!data) throw new res.error("Data is not found");
+    
+            const admin = await req.db.admins.findOne({
+                admin_login: data.login
+            })
+    
+            if(!admin) throw new res.error("Admin is not found")
+    
+            if(!(await compareHash(data.password, admin.password))){
+                throw new Error("Password is incorrect")
+            } 
+    
+            res.cookie("token", await createToken({
+                _id: admin.admin_id
+            })).redirect("/admin/orders")
+    
+        } catch (error) {
+            console.log("LOGIN ERROR" + error);
+            res.redirect("/admin",{
+                error
+            })
+        }
+    }
+
+    //-------------------------------------------------------------------------------
+
     static async AdminCreateCategoryPostController(req, res, next){
         try {
             const data = await CategoryValidation(req.body, res.error)
