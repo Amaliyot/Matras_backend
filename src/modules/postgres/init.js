@@ -12,3 +12,5 @@ async function init(db){
         console.log("INIT_ERROR", error);
     }
 }
+
+module.exports = init
