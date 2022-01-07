@@ -83,7 +83,7 @@ module.exports = class CategoryController{
         try {
             const categories = await req.db.categories.findAll()
 
-            if (!categories) throw new res.error(404, "Could not get categories")
+            if (!categories) throw new res.error(400, "Could not get categories")
 
             res.status(200).json({
                 ok: true,
