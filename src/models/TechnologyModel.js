@@ -14,10 +14,6 @@ module.exports = async (sequelize, Sequelize) => {
             type: Sequelize.STRING(1024),
             allowNull: false
         },
-        technology_photo: {
-            type: Sequelize.STRING,
-            allowNull: true
-        },
         technology_video: {
             type: Sequelize.STRING,
             allowNull: true
