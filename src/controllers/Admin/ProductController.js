@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 const path = require("path")
 const {ProductValidation} = require("../../modules/validations")
-=======
-const { ProductValidation } = require("../../modules/validations")
->>>>>>> 835388e63e59c296e42cf9891f7f5adac3fa2274
 
 module.exports = class ProductController{
     static async DeleteProductPostController(req, res, next){
