@@ -78,4 +78,21 @@ module.exports = class CategoryController{
             next(error)
         }
     }
+
+    static async CategoriesGetController(req, res, next){
+        try {
+            const categories = await req.db.categories.findAll()
+
+            if (!categories) throw new res.error(404, "Could not get categories")
+
+            res.status(200).json({
+                ok: true,
+                data: {
+                    categories
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }
