@@ -40,4 +40,13 @@ module.exports = class Validations {
             video: JOI.string().error(new CustomError(400, "Password is invalid"))
         }).validateAsync(data)
     }
+
+    static async OrderValidation(data, CustomError) {
+        return await JOI.object({
+            product_id: JOI.string().required().error(new CustomError(400, "Technology name is invalid")),
+            client_name: JOI.string().required().error(new CustomError(400, "Technology name is invalid")),
+            client_phone: JOI.string().regex(/(?:\+\(*[9]{2}[8]\)*\ *[0-9]{2}\ *[0-9]{3}(\-| )*[0-9]{2}(\-| )*[0-9]{2})/).error(new CustomError(400, "Description is invalid")),
+            product_count: JOI.string().error(new CustomError(400, "Password is invalid"))
+        }).validateAsync(data)
+    }
 }
