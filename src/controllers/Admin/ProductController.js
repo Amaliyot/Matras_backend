@@ -125,6 +125,33 @@ module.exports = class ProductController{
             next(error)
         }
     }
+
+    static async DeleteProductController(req, res, next){
+        try{
+            const id = req.params?.id 
+
+            const product = await req.db.products.findOne({
+                where: {
+                    product_id: id
+                }
+            })
+
+            if(!product) throw new res.error(400, "Product not found")
+
+            await req.db.products.destroy({
+                where: {
+                    product_id: product.product_id
+                }
+            })
+
+            res.status(200).json({
+                ok: true,
+                message: "Product deleted successfully"
+            })
+        }catch(error){
+            next(error)
+        }
+    }
 }
 
 function getExtension(filename) {
