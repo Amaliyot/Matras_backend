@@ -28,4 +28,21 @@ module.exports = class OrderController{
             next(error)
         }
     }
+
+    static async OrdersGetController(req, res, next){
+        try {
+            const orders = await req.db.orders.findAll()
+
+            if (!orders) throw new res.error(400, "Could not get orders")
+
+            res.status(200).json({
+                ok: true,
+                data: {
+                    orders
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }
