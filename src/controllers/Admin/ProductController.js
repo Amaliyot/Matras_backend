@@ -2,7 +2,7 @@ const path = require("path")
 const {ProductValidation} = require("../../modules/validations")
 
 module.exports = class ProductController{
-    static async DeleteProductPostController(req, res, next){
+    static async UpdateProductPostController(req, res, next){
         try {
             const data = await ProductValidation(req.body, res.error)
 
@@ -12,17 +12,38 @@ module.exports = class ProductController{
 
             if(!isProduct) throw new res.error(400, "Product not found")
 
-            const product = await req.db.products.update({
+            const category = await req.db.categories.findOne({
                 where: {
-                    product_id: req.params.id
+                    category_id: data.category
                 }
             })
 
-            if(!product) throw new res.error(500, "Something went wrong while deleting category!")
+            if(!category) throw new res.error(400, "Category not found")
+
+            const product = await req.db.products.update(
+                {
+                    product_name: data.name,
+                    product_description: data.description,
+                    product_price: data.price,
+                    product_weight: data.weight,
+                    product_size: data.size,
+                    product_warranty_duration: data.warranty,
+                    product_capacity: data.capacity,
+                    product_isNew: data.isNew,
+                    product_isActive: data.isActive,
+                    product_hasDiscount: data.hasDiscount,
+                    product_discount_price: data.discountPrice,
+                    category_id: category.dataValues.category_id,
+                where: {
+                    product_id: req.params.id
+                }
+                })
+
+            if(!product) throw new res.error(500, "Something went wrong while updateing the product!")
 
             res.status(201).json({
                 ok: true,
-                message: "Product deleted succesfully"
+                message: "Product updated succesfully"
             })
         } catch (error) {
             next(error)
@@ -38,8 +59,6 @@ module.exports = class ProductController{
                     category_id: data.category
                 }
             })
-
-            console.log(category);
 
             if(!category) throw new res.error(400, "Category not found")
 
