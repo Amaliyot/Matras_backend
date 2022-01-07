@@ -7,7 +7,9 @@ module.exports = class ProductController{
             const data = await ProductValidation(req.body, res.error)
 
             const isProduct = await req.db.products.findOne({
-                product_id: req.params.id
+                where: {
+                    product_id: req.params.id
+                }
             })
 
             if(!isProduct) throw new res.error(400, "Product not found")
@@ -35,7 +37,7 @@ module.exports = class ProductController{
                     product_discount_price: data.discountPrice,
                     category_id: category.dataValues.category_id,
                 where: {
-                    product_id: req.params.id
+                    product_id: isProduct.product_id
                 }
                 })
 

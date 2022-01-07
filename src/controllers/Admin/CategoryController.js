@@ -3,10 +3,12 @@ const { CategoryValidation } = require("../../modules/validations");
 module.exports = class CategoryController{
     static async RemoveCategoryController(req, res, next){
         try {
-            const data = await CategoryValidation(req.body, res.error)
+            const id = req.params?.id 
 
             const isCategory = await req.db.categories.findOne({
-                category_id: req.params.id
+                where: {
+                    category_id: id
+                }
             })
 
             if(!isCategory) throw new res.error(400, "Category is not found")
@@ -29,7 +31,9 @@ module.exports = class CategoryController{
             console.log(data);
 
             const isCategory = await req.db.categories.findOne({
-                category_id: req.params.id
+                where: {
+                    category_id: req.params.id
+                }
             })
 
             if(!isCategory) throw new res.error(400, "Category is not found")
@@ -37,16 +41,13 @@ module.exports = class CategoryController{
             const category = await req.db.categories.update(
                 {
                     category_name: data.name,
-                    category_status: data.status
-                },
-                {
+                    category_status: data.status,
                     where:{
-                        category_id: req.params.id
+                        category_id: isCategory.category_id
                     }
-                }
-            )
+                })
 
-            if(!category) throw new res.error(400 , "Something went wrong while updating category!")
+            if(!category) throw new res.error(500 , "Something went wrong while updating category!")
 
             res.status(201).json({
                 ok: true,
