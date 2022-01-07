@@ -106,8 +106,6 @@ module.exports = class ProductController{
                 }
             })
 
-            console.log(files);
-
             for (let file of files){
                  let file_name = file.md5 + getExtension(file.name)
                 const f = await req.db.photos.create({
