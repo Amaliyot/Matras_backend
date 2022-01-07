@@ -11,7 +11,7 @@ module.exports = async (sequelize, Sequelize) => {
             allowNull: false
         },
         technology_description: {
-            type: Sequelize.STRING(1024),
+            type: Sequelize.TEXT,
             allowNull: false
         },
         technology_video: {
