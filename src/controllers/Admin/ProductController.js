@@ -1,7 +1,38 @@
+<<<<<<< HEAD
 const path = require("path")
 const {ProductValidation} = require("../../modules/validations")
+=======
+const { ProductValidation } = require("../../modules/validations")
+>>>>>>> 835388e63e59c296e42cf9891f7f5adac3fa2274
 
 module.exports = class ProductController{
+    static async DeleteProductPostController(req, res, next){
+        try {
+            const data = await ProductValidation(req.body, res.error)
+
+            const isProduct = await req.db.products.findOne({
+                product_id: req.params.id
+            })
+
+            if(!isProduct) throw new res.error(400, "Product not found")
+
+            const product = await req.db.products.update({
+                where: {
+                    product_id: req.params.id
+                }
+            })
+
+            if(!product) throw new res.error(500, "Something went wrong while deleting category!")
+
+            res.status(201).json({
+                ok: true,
+                message: "Product deleted succesfully"
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+//-------------------------------------------------------------------------
     static async CreateProductPostController(req, res, next){
         try {
             const data = await ProductValidation(req.body, res.error)
