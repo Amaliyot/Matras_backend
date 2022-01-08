@@ -48,7 +48,7 @@ module.exports = async (sequelize, Sequelize) => {
         },
         product_discount_price: {
             type: Sequelize.BIGINT,
-            allowNull: false
+            allowNull: true
         }
     })
 }
