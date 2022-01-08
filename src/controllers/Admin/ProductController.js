@@ -6,11 +6,35 @@ module.exports = class ProductController{
     static async CreateProductPostController(req, res, next){
         try {
             if(!req.body.discountPrice.length) req.body.discountPrice = null;
-            console.log(req.body);
-            const incoming = {
-                ...req.body,
+
+            const data = await ProductValidation(req.body, res.error)
+
+            if (!req.files || !req.files.files) throw new res.error(400, "At least one photo required");
+
+            let files = req.files.files
+            const allowedTypeForFile = [
+                ".png",
+                ".jpg",
+                ".jpeg",
+            ];
+            
+            if (!Array.isArray(files) && files) {
+                files = [files];
             }
-            const data = await ProductValidation(incoming, res.error)
+
+            if (files.length > 4) throw new res.error(400, "Too many files. Allowed=4");
+        
+            files.map(file => {
+                if (
+                    !allowedTypeForFile.includes(getExtension(file.name))
+                ){
+                    throw new res.error(400, `${getExtension(file.name)} files are not allowed`)
+                }else if (
+                    file.size > 3000000
+                ){
+                    throw new res.error(400, `Files' size is too large. Current=${Math.round(file.size / 1000000)}mb. Limit=3mb`)
+                }
+            })
 
             const category = await req.db.categories.findOne({
                 where: {
@@ -38,7 +62,17 @@ module.exports = class ProductController{
             if (!new_product) throw new res.error(500, "Something went wrong while creating category!")
 
             if(req.files.files){
-                fileUploader(req.files.files, res.error, req.db, new_product)
+            
+                for (let file of files){
+                     let file_name = file.md5 + getExtension(file.name)
+                    const f = await req.db.photos.create({
+                        photo_name: file.md5,
+                        photo_ext: getExtension(file.name),
+                        product_id: new_product.dataValues.product_id
+                    })
+            
+                    await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'productPhotos', file_name))
+                }
             }
 
             res.status(201).json({
@@ -47,7 +81,6 @@ module.exports = class ProductController{
             })
         } catch (error) {
             next(error)
-            console.log(error);
         }
     }
 
@@ -98,7 +131,41 @@ module.exports = class ProductController{
                 })
                 if(existingFiles.length > 4) throw new res.error(400, "Product already has 4 photos")
                 
-                fileUploader(req.files.files, res.error, req.db, product)
+                let files = req.files.files
+                const allowedTypeForFile = [
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                ];
+                
+                if (!Array.isArray(files) && files) {
+                    files = [files];
+                }
+
+                if (files.length > (4 - existingFiles.length)) throw new res.error(400, `Too many files. Current=${existingFiles.length}. Available=${4 - existingFiles.length}`);
+            
+                files.map(file => {
+                    if (
+                        !allowedTypeForFile.includes(getExtension(file.name))
+                    ){
+                        throw new res.error(400, `${getExtension(file.name)} files are not allowed`)
+                    }else if (
+                        file.size > 3000000
+                    ){
+                        throw new res.error(400, `Files are too large. Current=${file.size / 1000000}mb. Limit=3mb`)
+                    }
+                })
+            
+                for (let file of files){
+                     let file_name = file.md5 + getExtension(file.name)
+                    const f = await req.db.photos.create({
+                        photo_name: file.md5,
+                        photo_ext: getExtension(file.name),
+                        product_id: product.dataValues.product_id
+                    })
+            
+                    await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'productPhotos', file_name))
+                }
             }
 
             res.status(201).json({
@@ -124,17 +191,23 @@ module.exports = class ProductController{
 
             const photos = await req.db.photos.findAll({
                 where: {
-                    product_id: product.product_id
+                    product_id: product.dataValues.product_id
                 }
             })
 
             for(let p of photos){
-                fs.unlink(``)
+                fs.unlink(path.join(__dirname, '..', '..', 'public', 'files', 'productPhotos', `${p.photo_name + p.photo_ext}`))
             }
+
+            await req.db.photos.destroy({
+                where: {
+                    product_id: product.dataValues.product_id
+                }
+            })
 
             await req.db.products.destroy({
                 where: {
-                    product_id: product.product_id
+                    product_id: product.dataValues.product_id
                 }
             })
 
@@ -168,44 +241,4 @@ module.exports = class ProductController{
 function getExtension(filename) {
 	var i = filename.lastIndexOf(".");
 	return i < 0 ? "" : filename.substr(i);
-}
-
-async function fileUploader(files, err, db, product){
-    const allowedTypeForFile = [
-        ".png",
-        ".jpg",
-        ".jpeg",
-    ];
-    
-    if (!Array.isArray(files) && files) {
-        files = [files];
-    }
-
-    if (!files) throw new err(400, "Files not found");
-    if (files?.length > 4) throw new err(400, "Too many files. Allowed 4");
-
-    files.map(file => {
-        if (
-            !allowedTypeForFile.includes(getExtension(file.name))
-        ){
-            throw new err(400, `${getExtension(file.name)} files are not allowed`)
-        }else if (
-            file.size > 100 * 1024000
-        ){
-            throw new err(400, `Files are too large`)
-        }
-    })
-
-    for (let file of files){
-         let file_name = file.md5 + getExtension(file.name)
-        const f = await db.photos.create({
-            photo_name: file.md5,
-            photo_ext: getExtension(file.name),
-            product_id: product.dataValues.product_id
-        })
-
-        console.log(f);
-
-        await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'productPhotos', file_name))
-    }
 }

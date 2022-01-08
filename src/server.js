@@ -25,8 +25,8 @@ async function server(port) {
 		app.use(express.urlencoded({ extended: true }));
 		app.use("/public", express.static(path.join(__dirname, 'public')))
 
-		app.use(errorHandler)
 		app.use("/v1", Router)
+		app.use(errorHandler)
 
 	} catch (error) {
 		console.log("SERVER ERROR", error);
