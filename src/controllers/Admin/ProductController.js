@@ -86,6 +86,7 @@ module.exports = class ProductController{
 
     static async UpdateProductPostController(req, res, next){
         try {
+            if(!req.body.discountPrice.length) req.body.discountPrice = null;
             const data = await ProductValidation(req.body, res.error)
 
             const isProduct = await req.db.products.findOne({
@@ -116,17 +117,20 @@ module.exports = class ProductController{
                     product_hasDiscount: data.hasDiscount,
                     product_discount_price: data.discountPrice,
                     category_id: category.dataValues.category_id,
-                where: {
-                    product_id: req.params.id
+                },
+                {
+                    where: {
+                        product_id: isProduct.product_id
+                    }
                 }
-                })
+                )
 
             if(!product) throw new res.error(500, "Something went wrong while updateing the product!")
 
             if(req.files.files){
                 const existingFiles = await req.db.photos.findAll({
                     where: {
-                        product_id: isProduct.product_id
+                        product_id: isProduct.dataValues.product_id
                     }
                 })
                 if(existingFiles.length > 4) throw new res.error(400, "Product already has 4 photos")
@@ -142,7 +146,7 @@ module.exports = class ProductController{
                     files = [files];
                 }
 
-                if (files.length > (4 - existingFiles.length)) throw new res.error(400, `Too many files. Current=${existingFiles.length}. Available=${4 - existingFiles.length}`);
+                if (files.length > (4 - existingFiles.length)) throw new res.error(400, `Too many files. Sent=${files.length}. Current=${existingFiles.length}. Available=${4 - existingFiles.length}`);
             
                 files.map(file => {
                     if (
@@ -161,7 +165,7 @@ module.exports = class ProductController{
                     const f = await req.db.photos.create({
                         photo_name: file.md5,
                         photo_ext: getExtension(file.name),
-                        product_id: product.dataValues.product_id
+                        product_id: isProduct.dataValues.product_id
                     })
             
                     await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'productPhotos', file_name))
