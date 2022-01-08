@@ -19,16 +19,10 @@ async function postgres(){
 
         let db = {};
 
-        db.admins = await AdminModel(sequelize, Sequelize)
-        db.categories = await CategoryModel(sequelize, Sequelize)
-        db.customers = await CustomerModel(sequelize, Sequelize)
-        db.orders = await OrderModel(sequelize, Sequelize)
-        db.products = await ProductModel(sequelize, Sequelize)
-        db.technologies = await TechnologyModel(sequelize, Sequelize)
-        db.photos = await ProductPhotoModel(sequelize, Sequelize)
-
-        await init(db)
-        await relations(db)
+        await instantiate(db).then(async () => {
+            await init(db)
+            await relations(db)
+        })
 
         await sequelize.sync({ force: false })
 
@@ -36,6 +30,16 @@ async function postgres(){
     } catch (error) {
         console.log("DATABASE_ERROR", error);
     }
+}
+
+async function instantiate(db){
+    db.admins = await AdminModel(sequelize, Sequelize)
+    db.categories = await CategoryModel(sequelize, Sequelize)
+    db.customers = await CustomerModel(sequelize, Sequelize)
+    db.orders = await OrderModel(sequelize, Sequelize)
+    db.products = await ProductModel(sequelize, Sequelize)
+    db.technologies = await TechnologyModel(sequelize, Sequelize)
+    db.photos = await ProductPhotoModel(sequelize, Sequelize)
 }
 
 module.exports = postgres;
