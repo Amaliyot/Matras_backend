@@ -90,6 +90,13 @@ module.exports = class ProductController{
             if(!product) throw new res.error(500, "Something went wrong while updateing the product!")
 
             if(req.files.files){
+                const existingFiles = await req.db.photos.findAll({
+                    where: {
+                        product_id: isProduct.product_id
+                    }
+                })
+                if(existingFiles.length > 4) throw new res.error(400, "Product already has 4 photos")
+                
                 fileUploader(req.files.files)
             }
 
