@@ -3,8 +3,7 @@ const { CategoryValidation } = require("../../modules/validations");
 module.exports = class CategoryController{
     static async RemoveCategoryController(req, res, next){
         try {
-            const id = req.params?.id 
-
+            let message = 'Category deleted successfully.'
             const isCategory = await req.db.categories.findOne({
                 where: {
                     category_id: id
@@ -12,11 +11,34 @@ module.exports = class CategoryController{
             })
 
             if(!isCategory) throw new res.error(400, "Category is not found")
+
+            if(!req.query.rmProducts){
+                throw new res.error(400, "query rmProducts is required")
+            }else{
+                if(req.query.rmProducts == true){
+                    const products = await req.db.products.destroy({
+                        where: {
+                            category_id: isCategory.dataValues.category_id
+                        }
+                    })
+
+                    if(products){
+                        message = "Category and products deleted successfully"
+                    }else{
+                        message = message + " Could not delete products"
+                    }
+                }
+            }
             
             await req.db.categories.destroy({
                 where: {
                     category_id: req.params.id
                 }
+            })
+
+            res.status(200).json({
+                ok: true,
+                message: "Categoty deleted successfully"
             })
         } catch (error) {
             next(error)
@@ -27,8 +49,6 @@ module.exports = class CategoryController{
     static async EditCategoryPostController(req, res, next){
         try {
             const data = await CategoryValidation(req.body, res.error)
-
-            console.log(data);
 
             const isCategory = await req.db.categories.findOne({
                 where: {
@@ -42,16 +62,18 @@ module.exports = class CategoryController{
                 {
                     category_name: data.name,
                     category_status: data.status,
+                },{
                     where:{
-                        category_id: isCategory.category_id
+                        category_id: isCategory.dataValues.category_id
                     }
-                })
+                }
+                )
 
             if(!category) throw new res.error(500 , "Something went wrong while updating category!")
 
-            res.status(201).json({
+            res.status(200).json({
                 ok: true,
-                message: "category updated succesfully"
+                message: "Category updated succesfully"
             })
 
         } catch (error) {

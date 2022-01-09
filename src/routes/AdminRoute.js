@@ -16,8 +16,8 @@ AdminRouter.post("/login", LoginPostController)
 // Category
 AdminRouter.get("/categories", CategoriesGetController)
 AdminRouter.post("/categories/new", CreateCategoryPostController)
-AdminRouter.put("/categories", EditCategoryPostController)
-AdminRouter.delete("/categories/:id", RemoveCategoryController)
+AdminRouter.put("/categories/:id", EditCategoryPostController)
+AdminRouter.delete("/categories/rm/:id", RemoveCategoryController)
 
 // Products
 AdminRouter.get("/products", ProductsGetController)

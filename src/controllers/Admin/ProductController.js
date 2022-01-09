@@ -9,7 +9,7 @@ module.exports = class ProductController{
 
             const data = await ProductValidation(req.body, res.error)
 
-            if (!req.files || !req.files.files) throw new res.error(400, "At least one photo required");
+            if (!req.files.files) throw new res.error(400, "At least one photo required");
 
             let files = req.files.files
             const allowedTypeForFile = [
