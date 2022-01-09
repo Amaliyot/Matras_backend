@@ -6,6 +6,7 @@ const OrderModel = require('../../models/OrderModel')
 const ProductModel = require('../../models/ProductModel')
 const ProductPhotoModel = require("../../models/ProductPhotoModel")
 const TechnologyModel = require('../../models/TechnologyModel')
+const TechnologyPhotosModel = require("../../models/TechnologyPhotosModel")
 const init = require("./init")
 const relations = require("./relations")
 
@@ -40,6 +41,7 @@ async function instantiate(db){
     db.products = await ProductModel(sequelize, Sequelize)
     db.technologies = await TechnologyModel(sequelize, Sequelize)
     db.photos = await ProductPhotoModel(sequelize, Sequelize)
+    db.tech_photos = await TechnologyPhotosModel(sequelize, Sequelize)
 }
 
 module.exports = postgres;

@@ -1,11 +1,12 @@
 const { TechnologyValidation } = require("../../modules/validations")
+const path = require("path")
 
 module.exports = class TechnologiesControllers{
     static async CreateTechnologiesPostControllers(req, res, next){
         try {
             const data = await TechnologyValidation(req.body, res.error)
 
-            if (!req.files.files || !req.body.video) throw new res.error(400, "At least one photo required");
+            if (!req.files.files || !req.body.video) throw new res.error(400, "At least one file (photo or video) required");
 
             let files = req.files.files
             const allowedTypeForFile = [
@@ -18,7 +19,7 @@ module.exports = class TechnologiesControllers{
                 files = [files];
             }
 
-            if (files.length > 4) throw new res.error(400, "Too many files. Allowed=4");
+            if (files.length > 2) throw new res.error(400, "Too many files. Allowed=2");
         
             files.map(file => {
                 if (
@@ -33,9 +34,9 @@ module.exports = class TechnologiesControllers{
             })
             
             const newTechnology = await req.db.technologies.create({
-                technologies_name: data.name,
-                technologies_description: data.description,
-                technologies_video: data.video
+                technology_name: data.name,
+                technology_description: data.description,
+                technology_video: data.video
             })
 
             if(!newTechnology) throw new res.error(500, "omething went wrong while creating technology!")
@@ -67,67 +68,75 @@ module.exports = class TechnologiesControllers{
         try {
             const data = await TechnologyValidation(req.body, res.error)
 
-            if (!req.files.photo || !req.body.video) throw new res.error(400, "At least one photo required");
-
-            let files = req.files.files
-            const allowedTypeForFile = [
-                ".png",
-                ".jpg",
-                ".jpeg",
-            ];
-            
-            if (!Array.isArray(files) && files) {
-                files = [files];
-            }
-
-            if (files.length > 4) throw new res.error(400, "Too many files. Allowed=4");
-        
-            files.map(file => {
-                if (
-                    !allowedTypeForFile.includes(getExtension(file.name))
-                ){
-                    throw new res.error(400, `${getExtension(file.name)} files are not allowed`)
-                }else if (
-                    file.size > 3000000
-                ){
-                    throw new res.error(400, `Files' size is too large. Current=${Math.round(file.size / 1000000)}mb. Limit=3mb`)
-                }
-            })
-
             const isTechnology = await req.db.technologies.findOne({
                 where: {
                     technology_id: req.params.id
                 }
             })
+            console.log(isTechnology);
+            if(!isTechnology) throw new res.error(400, "Technology not found")
 
-            if(isTechnology) throw new res.error(400, "Technology not found")
+            if(req.files){
+                const existingFiles = await req.db.tech_photos.findAll({
+                    where: {
+                        technology_id: isTechnology.technology_id
+                    }
+                })
+
+                if (existingFiles.length === 2) throw new res.error(400, `Technology already has 2 photos`);
+
+                let files = req.files.files
+                const allowedTypeForFile = [
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                ];
+                
+                if (!Array.isArray(files) && files) {
+                    files = [files];
+                }
+
+                if (files.length > (2 - existingFiles.length)) throw new res.error(400, `Too many files. Sent=${files.length}. Current=${existingFiles.length}. Available=${2 - existingFiles.length}`);
+            
+                files.map(file => {
+                    if (
+                        !allowedTypeForFile.includes(getExtension(file.name))
+                    ){
+                        throw new res.error(400, `${getExtension(file.name)} files are not allowed`)
+                    }else if (
+                        file.size > 3000000
+                    ){
+                        throw new res.error(400, `Files' size is too large. Current=${Math.round(file.size / 1000000)}mb. Limit=3mb`)
+                    }
+                })
+
+                for (let file of files){
+                    let file_name = file.md5 + getExtension(file.name)
+                   const f = await req.db.tech_photos.create({
+                       photo_name: file.md5,
+                       photo_ext: getExtension(file.name),
+                       technology_id: isTechnology.dataValues.technology_id
+                   })
+           
+                   await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', file_name))
+               }
+            }
 
             const technology = await req.db.technologies.update(
                 {
-                    technologies_name: data.name,
-                    technologies_description: data.description,
-                    technologies_video: data.video,
+                    technology_name: data.name,
+                    technology_description: data.description,
+                    technology_video: data.video,
+                },{
                     where: {
-                        technology_id: isTechnology.technology_id
+                        technology_id: isTechnology.dataValues.technology_id
                     }
                 }
             )
 
-            if(!technology) throw new res.error(500, "Something went wrong while updateing the technology!")
+            console.log(technology);
 
-            if(req.files.files){
-            
-                for (let file of files){
-                     let file_name = file.md5 + getExtension(file.name)
-                    const f = await req.db.tech_photos.create({
-                        photo_name: file.md5,
-                        photo_ext: getExtension(file.name),
-                        technology_id: newTechnology.dataValues.technology_id
-                    })
-            
-                    await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', file_name))
-                }
-            }
+            if(!technology) throw new res.error(500, "Something went wrong while updateing the technology!")
 
             res.status(200).json({
                 ok: true,
@@ -149,6 +158,16 @@ module.exports = class TechnologiesControllers{
             })
 
             if(!technology) throw new res.error(400, "Technology not found")
+
+            const photos = await req.db.tech_photos.findAll({
+                where: {
+                    technology_id: technology.dataValues.technology_id
+                }
+            })
+
+            for(let p of photos){
+                fs.unlink(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', `${p.photo_name + p.photo_ext}`))
+            }
 
             await req.db.technologies.destroy({
                 where: {
@@ -181,4 +200,10 @@ module.exports = class TechnologiesControllers{
             next(error)
         }
     }
+}
+
+
+function getExtension(filename) {
+	var i = filename.lastIndexOf(".");
+	return i < 0 ? "" : filename.substr(i);
 }

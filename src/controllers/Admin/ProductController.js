@@ -133,7 +133,7 @@ module.exports = class ProductController{
                         product_id: isProduct.dataValues.product_id
                     }
                 })
-                if(existingFiles.length > 4) throw new res.error(400, "Product already has 4 photos")
+                if(existingFiles.length === 4) throw new res.error(400, "Product already has 4 photos")
                 
                 let files = req.files.files
                 const allowedTypeForFile = [
