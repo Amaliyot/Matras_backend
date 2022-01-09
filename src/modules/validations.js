@@ -37,7 +37,7 @@ module.exports = class Validations {
         return await JOI.object({
             name: JOI.string().required().error(new CustomError(400, "Technology name is invalid")),
             description: JOI.string().error(new CustomError(400, "Description is invalid")),
-            video: JOI.string().error(new CustomError(400, "Password is invalid"))
+            video: JOI.string().allow('', null).error(new CustomError(400, "Password is invalid"))
         }).validateAsync(data)
     }
 

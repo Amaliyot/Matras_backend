@@ -1,10 +1,36 @@
-const { where } = require("sequelize/types")
 const { TechnologyValidation } = require("../../modules/validations")
 
 module.exports = class TechnologiesControllers{
     static async CreateTechnologiesPostControllers(req, res, next){
         try {
             const data = await TechnologyValidation(req.body, res.error)
+
+            if (!req.files.files || !req.body.video) throw new res.error(400, "At least one photo required");
+
+            let files = req.files.files
+            const allowedTypeForFile = [
+                ".png",
+                ".jpg",
+                ".jpeg",
+            ];
+            
+            if (!Array.isArray(files) && files) {
+                files = [files];
+            }
+
+            if (files.length > 4) throw new res.error(400, "Too many files. Allowed=4");
+        
+            files.map(file => {
+                if (
+                    !allowedTypeForFile.includes(getExtension(file.name))
+                ){
+                    throw new res.error(400, `${getExtension(file.name)} files are not allowed`)
+                }else if (
+                    file.size > 3000000
+                ){
+                    throw new res.error(400, `Files' size is too large. Current=${Math.round(file.size / 1000000)}mb. Limit=3mb`)
+                }
+            })
             
             const newTechnology = await req.db.technologies.create({
                 technologies_name: data.name,
@@ -13,6 +39,20 @@ module.exports = class TechnologiesControllers{
             })
 
             if(!newTechnology) throw new res.error(500, "omething went wrong while creating technology!")
+
+            if(req.files.files){
+            
+                for (let file of files){
+                     let file_name = file.md5 + getExtension(file.name)
+                    const f = await req.db.tech_photos.create({
+                        photo_name: file.md5,
+                        photo_ext: getExtension(file.name),
+                        technology_id: newTechnology.dataValues.technology_id
+                    })
+            
+                    await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', file_name))
+                }
+            }
 
             res.status(201).json({
                 ok: true,
@@ -26,6 +66,33 @@ module.exports = class TechnologiesControllers{
     static async UpdateTechnologiesPostControllers(req, res, next){
         try {
             const data = await TechnologyValidation(req.body, res.error)
+
+            if (!req.files.photo || !req.body.video) throw new res.error(400, "At least one photo required");
+
+            let files = req.files.files
+            const allowedTypeForFile = [
+                ".png",
+                ".jpg",
+                ".jpeg",
+            ];
+            
+            if (!Array.isArray(files) && files) {
+                files = [files];
+            }
+
+            if (files.length > 4) throw new res.error(400, "Too many files. Allowed=4");
+        
+            files.map(file => {
+                if (
+                    !allowedTypeForFile.includes(getExtension(file.name))
+                ){
+                    throw new res.error(400, `${getExtension(file.name)} files are not allowed`)
+                }else if (
+                    file.size > 3000000
+                ){
+                    throw new res.error(400, `Files' size is too large. Current=${Math.round(file.size / 1000000)}mb. Limit=3mb`)
+                }
+            })
 
             const isTechnology = await req.db.technologies.findOne({
                 where: {
@@ -47,6 +114,20 @@ module.exports = class TechnologiesControllers{
             )
 
             if(!technology) throw new res.error(500, "Something went wrong while updateing the technology!")
+
+            if(req.files.files){
+            
+                for (let file of files){
+                     let file_name = file.md5 + getExtension(file.name)
+                    const f = await req.db.tech_photos.create({
+                        photo_name: file.md5,
+                        photo_ext: getExtension(file.name),
+                        technology_id: newTechnology.dataValues.technology_id
+                    })
+            
+                    await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', file_name))
+                }
+            }
 
             res.status(200).json({
                 ok: true,

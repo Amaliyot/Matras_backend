@@ -30,6 +30,21 @@ module.exports = async (db) => {
         }
     })
 
+    //  technologies & tech_photos
+    await db.technologies.hasMany(db.tech_photos, {
+        foreignKey: {
+            name: "technology_id",
+            allowNull: false
+        }
+    })
+
+    await db.tech_photos.belongsTo(db.technologies, {
+        foreignKey: {
+            name: "technology_id",
+            allowNull: false
+        }
+    })
+
     //  products & orders
     await db.products.hasMany(db.orders, {
         foreignKey: {
