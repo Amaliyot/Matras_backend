@@ -8,30 +8,38 @@ module.exports = class AdminController{
     static async LoginPostController (req, res, next){
         try {
             const data = await AdminSignInValidation(req.body, res.error);
-
-            console.log(data);
     
             const admin = await req.db.admins.findOne({
                 admin_login: data.login
             })
     
             if(!admin) throw new res.error("Admin is not found")
-
-            console.log(admin);
     
             if(!(compareHash(data.password, admin.admin_password))){
                 throw new Error("Password is incorrect")
             } 
+
+            await req.db.sessions.destroy({
+                where: {
+                    session_user_agent: req.headers["user-agent"] || "Unknown",
+                    admin_id: admin.dataValues.admin_id
+                }
+            })
+            
+            const session = await req.db.sessions.create({
+                session_user_agent: req.headers["user-agent"] || "Unknown",
+                admin_id: admin.dataValues.admin_id
+            })
     
             let token = await createToken({
-                _id: admin.admin_id
+                session_id: session.dataValues.session_id
             });
 
             res.status(201).json({
 				ok: true,
 				message: "Logged successfully",
 				data: {
-					token,
+					token
 				},
 			});
     
