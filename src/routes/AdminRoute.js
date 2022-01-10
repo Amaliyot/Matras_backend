@@ -1,12 +1,13 @@
+const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 const {LoginPostController} = require("../controllers/Admin/AdminController");
 const {CreateCategoryPostController, EditCategoryPostController, RemoveCategoryController, CategoriesGetController} = require("../controllers/Admin/CategoryController");
 const {CreateProductPostController, UpdateProductPostController, DeleteProductController, ProductsGetController} = require("../controllers/Admin/ProductController");
 const { TechnologiesGetController, CreateTechnologiesPostControllers, UpdateTechnologiesPostControllers, DeleteTechnologiesPostControllers } = require("../controllers/Admin/TechnologyController");
-const { DeleteTechnologyPhotoPostController, DeleteProductPhotoPostController } = require("../controllers/Admin/FilesController");
+const { DeleteTechnologyPhotoPostController, DeleteProductPhotoPostController, DeleteAdressPhotoPostController } = require("../controllers/Admin/FilesController");
+const { AdressesGetController, CreateAdressPostControllers, UpdateAdressPostControllers, DeleteAdressPostControllers } = require("../controllers/Admin/AddressController");
 
 const AdminRouter = require("express").Router();
 
-const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 const fileUpload = require("express-fileupload");
 const configFileUpload = {
 	safeFileNames: false,
@@ -35,6 +36,13 @@ AdminRouter.post("/technologies/new", fileUpload(configFileUpload), CreateTechno
 AdminRouter.put("/technologies/:id", fileUpload(configFileUpload), UpdateTechnologiesPostControllers)
 AdminRouter.delete("/technologies/rm/:id", DeleteTechnologiesPostControllers)
 AdminRouter.delete("/technologies/files/rm/:id", DeleteTechnologyPhotoPostController)
+
+// Addresses
+AdminRouter.get("/addresses", AdressesGetController)
+AdminRouter.post("/addresses/new", fileUpload(configFileUpload), CreateAdressPostControllers)
+AdminRouter.put("/addresses/:id", fileUpload(configFileUpload), UpdateAdressPostControllers)
+AdminRouter.delete("/addresses/rm/:id", DeleteAdressPostControllers)
+AdminRouter.delete("/addresses/files/rm/:id", DeleteAdressPhotoPostController)
 
 
 module.exports = AdminRouter
