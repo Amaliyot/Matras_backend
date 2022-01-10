@@ -49,4 +49,10 @@ module.exports = class Validations {
             product_count: JOI.string().error(new CustomError(400, "Password is invalid"))
         }).validateAsync(data)
     }
+
+    static async ClientPhoneValidation(data, CustomError) {
+        return await JOI.object({
+            client_phone: JOI.string().regex(/(?:\+\(*[9]{2}[8]\)*\ *[0-9]{2}\ *[0-9]{3}(\-| )*[0-9]{2}(\-| )*[0-9]{2})/).error(new CustomError(400, "Description is invalid")),
+        }).validateAsync(data)
+    }
 }
