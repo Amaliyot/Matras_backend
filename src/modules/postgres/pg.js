@@ -11,6 +11,8 @@ const TechnologyPhotosModel = require("../../models/TechnologyPhotosModel")
 const ClientPhoneModel = require("../../models/ClientPhoneModel")
 const init = require("./init")
 const relations = require("./relations")
+const AdressModel = require("../../models/AdressModel")
+const AdressPhotosModel = require("../../models/AdressPhotosModel")
 
 const sequelize = new Sequelize(process.env.DB_URL, {
     logging: false
@@ -43,9 +45,11 @@ async function instantiate(db){
     db.orders = await OrderModel(sequelize, Sequelize)
     db.products = await ProductModel(sequelize, Sequelize)
     db.technologies = await TechnologyModel(sequelize, Sequelize)
+    db.adresses = await AdressModel(sequelize, Sequelize)
+    db.client_phone = await ClientPhoneModel(sequelize, Sequelize)
     db.photos = await ProductPhotoModel(sequelize, Sequelize)
     db.tech_photos = await TechnologyPhotosModel(sequelize, Sequelize)
-    db.client_phone = await ClientPhoneModel(sequelize, Sequelize)
+    db.adress_photos = await AdressPhotosModel(sequelize, Sequelize)
 }
 
 module.exports = postgres;

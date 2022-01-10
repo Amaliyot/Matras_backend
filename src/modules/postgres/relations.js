@@ -60,6 +60,21 @@ module.exports = async (db) => {
         }
     })
 
+    //  adresses & adress_photos
+    await db.adresses.hasMany(db.adress_photos, {
+        foreignKey: {
+            name: "adress_id",
+            allowNull: false
+        }
+    })
+
+    await db.adress_photos.belongsTo(db.adresses, {
+        foreignKey: {
+            name: "adress_id",
+            allowNull: false
+        }
+    })
+
     //  products & orders
     await db.products.hasMany(db.orders, {
         foreignKey: {
