@@ -9,6 +9,10 @@ module.exports = async (sequelize, Sequelize) => {
         client_phone_number: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        client_phone_status: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false
         }
     })
 }
