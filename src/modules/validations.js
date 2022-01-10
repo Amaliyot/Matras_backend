@@ -41,6 +41,15 @@ module.exports = class Validations {
         }).validateAsync(data)
     }
 
+    static async AdressValidation(data, CustomError) {
+        return await JOI.object({
+            name: JOI.string().required().error(new CustomError(400, "Technology name is invalid")),
+            location: JOI.string().required().error(new CustomError(400, "Location is invalid")),
+            description: JOI.string().error(new CustomError(400, "Description is invalid")),
+            status: JOI.boolean().required().error(new CustomError(400, "Status is invalid"))
+        }).validateAsync(data)
+    }
+
     static async OrderValidation(data, CustomError) {
         return await JOI.object({
             product_id: JOI.string().required().error(new CustomError(400, "Technology name is invalid")),
