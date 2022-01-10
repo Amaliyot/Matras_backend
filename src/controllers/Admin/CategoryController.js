@@ -4,6 +4,7 @@ module.exports = class CategoryController{
     static async RemoveCategoryController(req, res, next){
         try {
             let message = 'Category deleted successfully.'
+            let id = req.params.id
             const isCategory = await req.db.categories.findOne({
                 where: {
                     category_id: id
