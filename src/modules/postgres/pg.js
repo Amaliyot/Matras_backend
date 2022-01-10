@@ -5,6 +5,7 @@ const CustomerModel = require('../../models/CustomerModel')
 const OrderModel = require('../../models/OrderModel')
 const ProductModel = require('../../models/ProductModel')
 const ProductPhotoModel = require("../../models/ProductPhotoModel")
+const SessionModel = require("../../models/SessionModel")
 const TechnologyModel = require('../../models/TechnologyModel')
 const TechnologyPhotosModel = require("../../models/TechnologyPhotosModel")
 const init = require("./init")
@@ -35,6 +36,7 @@ async function postgres(){
 
 async function instantiate(db){
     db.admins = await AdminModel(sequelize, Sequelize)
+    db.sessions = await SessionModel(sequelize, Sequelize)
     db.categories = await CategoryModel(sequelize, Sequelize)
     db.customers = await CustomerModel(sequelize, Sequelize)
     db.orders = await OrderModel(sequelize, Sequelize)

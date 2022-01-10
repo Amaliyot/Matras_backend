@@ -1,4 +1,19 @@
 module.exports = async (db) => {
+    
+    // admins & sessions
+    await db.admins.hasMany(db.sessions, {
+        foreignKey: {
+            name: "admin_id",
+            allowNull: false
+        }
+    })
+
+    await db.sessions.belongsTo(db.admins, {
+        foreignKey: {
+            name: "admin_id",
+            allowNull: false
+        }
+    })
 
     // categories & products
     await db.categories.hasMany(db.products, {
