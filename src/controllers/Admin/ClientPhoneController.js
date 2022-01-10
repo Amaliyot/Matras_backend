@@ -2,43 +2,52 @@ const { ClientPhoneValidation } = require("../../modules/validations")
 
 module.exports = class ClientPhoneController{
     static async CreateClientPhonePostController(req, res, next){
-        const data = await ClientPhoneValidation(req.body, res.error)
+        try {
+            const data = await ClientPhoneValidation(req.body, res.error)
 
-        const new_client_phone = await req.db.client_phone.create({
-            client_phone_number: data.phone
-        })
+            const new_client_phone = await req.db.client_phone.create({
+                client_phone_number: data.phone,
+                client_phone_status: data.status
+            })
 
-        if(!new_client_phone) throw new res.error(500, "Something went wrong while creating client phone!")
+            if(!new_client_phone) throw new res.error(500, "Something went wrong while creating client phone!")
 
-        res.status(200).json({
-            ok: true,
-            message: "Client phone created succesfully"
-        })
+            res.status(201).json({
+                ok: true,
+                message: "Client phone created succesfully"
+            })
+        } catch (error) {
+            next(error)
+        }
     }
 
     static async DeleteClientPhonePostController(req, res, next){
-        let message = "Client phone deleted successfully."
-        const id = req.params.id
-        const isClientPhone = await req.db.client_phone.findOne({
-            where: {
-                client_phone_id: id
-            }
-        })
+        try {
+            let message = "Client phone deleted successfully."
+            const id = req.params.id
+            const isClientPhone = await req.db.client_phone.findOne({
+                where: {
+                    client_phone_id: id
+                }
+            })
 
-        if(!isClientPhone) throw new res.error(400,"Client phone is not found")
+            if(!isClientPhone) throw new res.error(400,"Client phone is not found")
 
-        const clientPhone = await req.db.client_phone.destroy({
-            where: {
-                client_phone_id: id
-            }
-        })
+            const clientPhone = await req.db.client_phone.destroy({
+                where: {
+                    client_phone_id: id
+                }
+            })
 
-        if(!clientPhone) throw new res.error(500, "Something went wrong while creating client phone!")
+            if(!clientPhone) throw new res.error(500, "Something went wrong while creating client phone!")
 
-        res.status(200).json({
-            ok: true,
-            message: "Client phone deleted successfully"
-        })
+            res.status(200).json({
+                ok: true,
+                message: "Client phone deleted successfully"
+            })
+        } catch (error) {
+            next(error)
+        }
     }
 
     static async ClientPhonesGetController(req, res, next){

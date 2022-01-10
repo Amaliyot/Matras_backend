@@ -45,14 +45,15 @@ module.exports = class Validations {
         return await JOI.object({
             product_id: JOI.string().required().error(new CustomError(400, "Technology name is invalid")),
             client_name: JOI.string().required().error(new CustomError(400, "Technology name is invalid")),
-            client_phone: JOI.string().regex(/(?:\+\(*[9]{2}[8]\)*\ *[0-9]{2}\ *[0-9]{3}(\-| )*[0-9]{2}(\-| )*[0-9]{2})/).error(new CustomError(400, "Description is invalid")),
+            client_phone: JOI.string().regex(/(?:\+\(*[9]{2}[8]\)*\ *[0-9]{2}\ *[0-9]{3}(\-| )*[0-9]{2}(\-| )*[0-9]{2})/).error(new CustomError(400, "Phone number is invalid")),
             product_count: JOI.string().error(new CustomError(400, "Password is invalid"))
         }).validateAsync(data)
     }
 
     static async ClientPhoneValidation(data, CustomError) {
         return await JOI.object({
-            client_phone: JOI.string().regex(/(?:\+\(*[9]{2}[8]\)*\ *[0-9]{2}\ *[0-9]{3}(\-| )*[0-9]{2}(\-| )*[0-9]{2})/).error(new CustomError(400, "Description is invalid")),
+            client_phone_number: JOI.string().regex(/(?:\+\(*[9]{2}[8]\)*\ *[0-9]{2}\ *[0-9]{3}(\-| )*[0-9]{2}(\-| )*[0-9]{2})/).error(new CustomError(400, "Description is invalid")).error(new CustomError(400, "Phone number is invalid")),
+            client_phone_status: JOI.boolean().required().error(new CustomError(400, "Status is invalid"))
         }).validateAsync(data)
     }
 }
