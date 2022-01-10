@@ -6,10 +6,13 @@ const { DeleteTechnologyPhotoPostController, DeleteProductPhotoPostController } 
 
 const AdminRouter = require("express").Router();
 
+const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 const fileUpload = require("express-fileupload");
 const configFileUpload = {
 	safeFileNames: false,
 };
+
+AdminRouter.use(adminAuthMiddleware)
 
 AdminRouter.post("/login", LoginPostController)
 
