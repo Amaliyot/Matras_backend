@@ -1,10 +1,9 @@
-const { TechnologyValidation } = require("../../modules/validations")
-const path = require("path")
+const { AdressValidation } = require("../../modules/validations")
 
-module.exports = class TechnologiesControllers{
-    static async CreateTechnologiesPostControllers(req, res, next){
+module.exports = class AdressController{
+    static async CreateAdressPostControllers(req, res, next){
         try {
-            const data = await TechnologyValidation(req.body, res.error)
+            const data = await AdressValidation(req.body, res.error)
 
             if (!req.files.files || !req.body.video) throw new res.error(400, "At least one file (photo or video) required");
 
@@ -33,57 +32,58 @@ module.exports = class TechnologiesControllers{
                 }
             })
             
-            const newTechnology = await req.db.technologies.create({
-                technology_name: data.name,
-                technology_description: data.description,
-                technology_video: data.video
+            const new_adress = await req.db.adresses.create({
+                adress_name: data.name,
+                adress_location: data.location,
+                adress_description: data.description,
+                adress_status: data.status
             })
 
-            if(!newTechnology) throw new res.error(500, "Something went wrong while creating technology!")
+            if(!new_adress) throw new res.error(500, "Something went wrong while creating adress!")
 
             if(req.files.files){
             
                 for (let file of files){
                      let file_name = file.md5 + getExtension(file.name)
-                    const f = await req.db.tech_photos.create({
+                    const f = await req.db.adress_photos.create({
                         photo_name: file.md5,
                         photo_ext: getExtension(file.name),
-                        technology_id: newTechnology.dataValues.technology_id
+                        adress_id: new_adress.dataValues.adress_id
                     })
             
-                    await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', file_name))
+                    await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'adressPhotos', file_name))
                 }
             }
 
             res.status(201).json({
                 ok: true,
-                message: "Technology created succesfully"
+                message: "Adress created succesfully"
             })
         } catch (error) {
             next(error)
         }
     }
 
-    static async UpdateTechnologiesPostControllers(req, res, next){
+    static async UpdateAdressPostControllers(req, res, next){
         try {
-            const data = await TechnologyValidation(req.body, res.error)
+            const data = await AdressValidation(req.body, res.error)
 
-            const isTechnology = await req.db.technologies.findOne({
+            const isAdress = await req.db.adresses.findOne({
                 where: {
-                    technology_id: req.params.id
+                    adress_id: req.params.id
                 }
             })
-            console.log(isTechnology);
-            if(!isTechnology) throw new res.error(400, "Technology not found")
+
+            if(!isAdress) throw new res.error(400, "Adress not found")
 
             if(req.files){
-                const existingFiles = await req.db.tech_photos.findAll({
+                const existingFiles = await req.db.adress_photos.findAll({
                     where: {
-                        technology_id: isTechnology.technology_id
+                        adress_id: isAdress.adress_id
                     }
                 })
 
-                if (existingFiles.length === 2) throw new res.error(400, `Technology already has 2 photos`);
+                if (existingFiles.length === 2) throw new res.error(400, `Adress already has 2 photos`);
 
                 let files = req.files.files
                 const allowedTypeForFile = [
@@ -112,98 +112,91 @@ module.exports = class TechnologiesControllers{
 
                 for (let file of files){
                     let file_name = file.md5 + getExtension(file.name)
-                   const f = await req.db.tech_photos.create({
+                   const f = await req.db.adress_photos.create({
                        photo_name: file.md5,
                        photo_ext: getExtension(file.name),
-                       technology_id: isTechnology.dataValues.technology_id
+                       adress_id: isAdress.dataValues.adress_id
                    })
            
-                   await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', file_name))
+                   await file.mv(path.join(__dirname, '..', '..', 'public', 'files', 'adressPhotos', file_name))
                }
             }
 
-            const technology = await req.db.technologies.update(
+            const adress = await req.db.adresses.update(
                 {
-                    technology_name: data.name,
-                    technology_description: data.description,
-                    technology_video: data.video,
+                    adress_name: data.name,
+                    adress_location: data.location,
+                    adress_description: data.description,
+                    adress_status: data.status
                 },{
                     where: {
-                        technology_id: isTechnology.dataValues.technology_id
+                        adress_id: isAdress.dataValues.adress_id
                     }
                 }
             )
 
-            console.log(technology);
-
-            if(!technology) throw new res.error(500, "Something went wrong while updateing the technology!")
+            if(!adress) throw new res.error(500, "Something went wrong while updating the adress!")
 
             res.status(200).json({
                 ok: true,
-                message: "Technology updated succesfully"
+                message: "Adress updated succesfully"
             })
         } catch (error) {
             next(error)
         }
     }
 
-    static async DeleteTechnologiesPostControllers(req, res, next){
+    static async DeleteAdressPostControllers(req, res, next){
         try {
             const id = req.params?.id 
 
-            const technology = await req.db.technologies.findOne({
+            const adress = await req.db.adresses.findOne({
                 where: {
-                    technology_id: id
+                    adress_id: id
                 }
             })
 
-            if(!technology) throw new res.error(400, "Technology not found")
+            if(!adress) throw new res.error(400, "Adress not found")
 
-            const photos = await req.db.tech_photos.findAll({
+            const photos = await req.db.adress_photos.findAll({
                 where: {
-                    technology_id: technology.dataValues.technology_id
+                    adress_id: adress.dataValues.adress_id
                 }
             })
 
             for(let p of photos){
-                fs.unlink(path.join(__dirname, '..', '..', 'public', 'files', 'technologyPhotos', `${p.photo_name + p.photo_ext}`))
+                fs.unlink(path.join(__dirname, '..', '..', 'public', 'files', 'adressPhotos', `${p.photo_name + p.photo_ext}`))
             }
 
-            await req.db.technologies.destroy({
+            await req.db.adresses.destroy({
                 where: {
-                    technology_id: technology.technology_id
+                    adress_id: adress.dataValues.adress_id
                 }
             })
 
             res.status(200).json({
                 ok: true,
-                message: "Technology deleted successfully"
+                message: "Adress deleted successfully"
             })
         } catch (error) {
             next(error)
         }
     }
 
-    static async TechnologiesGetController(req, res, next){
+    static async AdressesGetController(req, res, next){
         try {
-            const technologies = await req.db.technologies.findAll()
+            const adresses = await req.db.adresses.findAll()
 
-            if (!technologies) throw new res.error(400, "Could not get technologies")
+            if (!adresses) throw new res.error(400, "Could not get adresses")
 
             res.status(200).json({
                 ok: true,
                 data: {
-                    technologies
+                    adresses
                 }
             })
         } catch (error) {
             next(error)
         }
     }
-}
-
-
-function getExtension(filename) {
-	var i = filename.lastIndexOf(".");
-	return i < 0 ? "" : filename.substr(i);
 }
