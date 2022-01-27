@@ -57,7 +57,10 @@ module.exports = class AdressController{
 
             res.status(201).json({
                 ok: true,
-                message: "Adress created succesfully"
+                message: "Adress created succesfully",
+                data: {
+                    adress: new_adress
+                }
             })
         } catch (error) {
             next(error)
@@ -131,7 +134,8 @@ module.exports = class AdressController{
                 },{
                     where: {
                         adress_id: isAdress.dataValues.adress_id
-                    }
+                    },
+                    returning: true
                 }
             )
 
@@ -139,7 +143,10 @@ module.exports = class AdressController{
 
             res.status(200).json({
                 ok: true,
-                message: "Adress updated succesfully"
+                message: "Adress updated succesfully",
+                data: {
+                    adress
+                }
             })
         } catch (error) {
             next(error)
