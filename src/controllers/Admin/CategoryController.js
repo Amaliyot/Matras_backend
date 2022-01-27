@@ -95,10 +95,12 @@ module.exports = class CategoryController{
 
             res.status(201).json({
                 ok: true,
-                message: "Category created succesfully"
+                message: "Category created succesfully",
+                data: {
+                    category: new_category
+                }
             })
         } catch (error) {
-            console.log(error);
             next(error)
         }
     }
