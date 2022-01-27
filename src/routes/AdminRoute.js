@@ -9,6 +9,7 @@ const { AdressesGetController, CreateAdressPostControllers, UpdateAdressPostCont
 const AdminRouter = require("express").Router();
 
 const fileUpload = require("express-fileupload");
+const { UpdateClientPhonePostController, ClientPhonesGetController, DeleteClientPhonePostController } = require("../controllers/Admin/ClientPhoneController");
 const configFileUpload = {
 	safeFileNames: false,
 };
@@ -26,7 +27,7 @@ AdminRouter.delete("/categories/rm/:id", RemoveCategoryController)
 // Products
 AdminRouter.get("/products", ProductsGetController)
 AdminRouter.post("/products/new", fileUpload(configFileUpload), CreateProductPostController)
-AdminRouter.put("/products/:id", fileUpload(configFileUpload), UpdateProductPostController)
+AdminRouter.put("/products/status/:id", UpdateProductStatusPostController)
 AdminRouter.delete("/products/rm/:id", DeleteProductController)
 AdminRouter.delete("/products/files/rm/:id", DeleteProductPhotoPostController)
 
@@ -43,6 +44,11 @@ AdminRouter.post("/addresses/new", fileUpload(configFileUpload), CreateAdressPos
 AdminRouter.put("/addresses/:id", fileUpload(configFileUpload), UpdateAdressPostControllers)
 AdminRouter.delete("/addresses/rm/:id", DeleteAdressPostControllers)
 AdminRouter.delete("/addresses/files/rm/:id", DeleteAdressPhotoPostController)
+
+// Client phones
+AdminRouter.get("/contacts", ClientPhonesGetController)
+AdminRouter.put("/contacts/:id", UpdateClientPhonePostController)
+AdminRouter.delete("/contacts/rm/:id", DeleteClientPhonePostController)
 
 
 module.exports = AdminRouter
