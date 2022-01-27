@@ -12,7 +12,8 @@ module.exports = async (sequelize, Sequelize) => {
         },
         client_phone_status: {
             type: Sequelize.BOOLEAN,
-            allowNull: false
+            allowNull: false,
+            defaultValue: false
         }
     })
 }
