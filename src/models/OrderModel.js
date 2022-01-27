@@ -23,6 +23,11 @@ module.exports = async (sequelize, Sequelize) => {
         order_count: {
             type: Sequelize.INTEGER,
             allowNull: false
+        },
+        order_status: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     })
 }
