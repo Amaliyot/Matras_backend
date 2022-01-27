@@ -12,28 +12,10 @@ module.exports = class CategoryController{
             })
 
             if(!isCategory) throw new res.error(400, "Category is not found")
-
-            if(!req.query.rmProducts){
-                throw new res.error(400, "query rmProducts is required")
-            }else{
-                if(req.query.rmProducts == true){
-                    const products = await req.db.products.destroy({
-                        where: {
-                            category_id: isCategory.dataValues.category_id
-                        }
-                    })
-
-                    if(products){
-                        message = "Category and products deleted successfully"
-                    }else{
-                        message = message + " Could not delete products"
-                    }
-                }
-            }
             
             await req.db.categories.destroy({
                 where: {
-                    category_id: req.params.id
+                    category_id: isCategory.dataValues.category_id
                 }
             })
 
@@ -85,6 +67,14 @@ module.exports = class CategoryController{
     static async CreateCategoryPostController(req, res, next){
         try {
             const data = await CategoryValidation(req.body, res.error)
+
+            const existance = await req.db.categories.findOne({
+                where: {
+                    category_name: data.name
+                }
+            })
+            
+            if (existance) throw new res.error(500, "Category already exists!")
 
             const new_category = await req.db.categories.create({
                 category_name: data.name,

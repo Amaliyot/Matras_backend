@@ -91,7 +91,7 @@ module.exports = class ClientPhoneController{
             res.status(200).json({
                 ok: true,
                 data: {
-                    client_phones
+                    contacts: client_phones
                 }
             })
         } catch (error) {

@@ -5,11 +5,13 @@ const {CreateProductPostController, UpdateProductPostController, DeleteProductCo
 const { TechnologiesGetController, CreateTechnologiesPostControllers, UpdateTechnologiesPostControllers, DeleteTechnologiesPostControllers } = require("../controllers/Admin/TechnologyController");
 const { DeleteTechnologyPhotoPostController, DeleteProductPhotoPostController, DeleteAdressPhotoPostController } = require("../controllers/Admin/FilesController");
 const { AdressesGetController, CreateAdressPostControllers, UpdateAdressPostControllers, DeleteAdressPostControllers } = require("../controllers/Admin/AddressController");
+const { OrderCreatePostController, OrdersGetController } = require("../controllers/Admin/OrderController");
+const { UpdateClientPhonePostController, ClientPhonesGetController, DeleteClientPhonePostController } = require("../controllers/Admin/ClientPhoneController");
+
 
 const AdminRouter = require("express").Router();
 
 const fileUpload = require("express-fileupload");
-const { UpdateClientPhonePostController, ClientPhonesGetController, DeleteClientPhonePostController } = require("../controllers/Admin/ClientPhoneController");
 const configFileUpload = {
 	safeFileNames: false,
 };
@@ -49,6 +51,10 @@ AdminRouter.delete("/addresses/files/rm/:id", DeleteAdressPhotoPostController)
 AdminRouter.get("/contacts", ClientPhonesGetController)
 AdminRouter.put("/contacts/:id", UpdateClientPhonePostController)
 AdminRouter.delete("/contacts/rm/:id", DeleteClientPhonePostController)
+
+// Oeders
+AdminRouter.get("/orders", OrdersGetController)
+
 
 
 module.exports = AdminRouter

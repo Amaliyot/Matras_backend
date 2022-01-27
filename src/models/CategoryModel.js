@@ -11,7 +11,7 @@ module.exports = async (sequelize, Sequelize) => {
             allowNull: false
         },
         category_status: {
-            type: Sequelize.ENUM("active", "inactive"),
+            type: Sequelize.BOOLEAN,
             allowNull: false
         }
     })
