@@ -77,7 +77,10 @@ module.exports = class ProductController{
 
             res.status(201).json({
                 ok: true,
-                message: "Product created succesfully"
+                message: "Product created succesfully",
+                data: {
+                    product: new_product
+                }
             })
         } catch (error) {
             next(error)
@@ -121,7 +124,8 @@ module.exports = class ProductController{
                 {
                     where: {
                         product_id: isProduct.product_id
-                    }
+                    },
+                    returning: true
                 }
                 )
 
@@ -172,9 +176,50 @@ module.exports = class ProductController{
                 }
             }
 
-            res.status(201).json({
+            res.status(200).json({
                 ok: true,
-                message: "Product updated succesfully"
+                message: "Product updated succesfully",
+                data: {
+                    product
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async UpdateProductStatusPostController(req, res, next){
+        try {
+            const {params} = req
+            const data = await ProductValidation(req.body, res.error)
+
+            const isProduct = await req.db.products.findOne({
+                product_id: params.id
+            })
+
+            if(!isProduct) throw new res.error(400, "Product not found")
+
+
+            const product = await req.db.products.update(
+                {
+                    product_isActive: data.status
+                },
+                {
+                    where: {
+                        product_id: isProduct.product_id
+                    },
+                    returning: true
+                }
+                )
+
+            if(!product) throw new res.error(500, "Something went wrong while updating the product!")
+
+            res.status(200).json({
+                ok: true,
+                message: "Product updated succesfully",
+                data: {
+                    product
+                }
             })
         } catch (error) {
             next(error)
