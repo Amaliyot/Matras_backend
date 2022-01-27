@@ -25,8 +25,8 @@ async function postgres(){
         let db = {};
 
         await instantiate(db).then(async () => {
-            await init(db)
             await relations(db)
+            await init(db)
         })
 
         await sequelize.sync({ force: false })

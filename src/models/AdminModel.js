@@ -1,10 +1,11 @@
 
 module.exports = async (sequelize, Sequelize) => {
-    return await sequelize.define("administrators", {
+    return await sequelize.define("admins", {
         admin_id: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV4(),
-            allowNull: false
+            allowNull: false,
+            primaryKey: true
         },
         admin_login: {
             type: Sequelize.STRING(64),

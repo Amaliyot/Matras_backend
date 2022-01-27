@@ -1,7 +1,7 @@
 const adminAuthMiddleware = require("../middlewares/adminAuthMiddleware");
 const {LoginPostController} = require("../controllers/Admin/AdminController");
 const {CreateCategoryPostController, EditCategoryPostController, RemoveCategoryController, CategoriesGetController} = require("../controllers/Admin/CategoryController");
-const {CreateProductPostController, UpdateProductPostController, DeleteProductController, ProductsGetController} = require("../controllers/Admin/ProductController");
+const {CreateProductPostController, UpdateProductPostController, DeleteProductController, ProductsGetController, UpdateProductStatusPostController} = require("../controllers/Admin/ProductController");
 const { TechnologiesGetController, CreateTechnologiesPostControllers, UpdateTechnologiesPostControllers, DeleteTechnologiesPostControllers } = require("../controllers/Admin/TechnologyController");
 const { DeleteTechnologyPhotoPostController, DeleteProductPhotoPostController, DeleteAdressPhotoPostController } = require("../controllers/Admin/FilesController");
 const { AdressesGetController, CreateAdressPostControllers, UpdateAdressPostControllers, DeleteAdressPostControllers } = require("../controllers/Admin/AddressController");
@@ -14,10 +14,10 @@ const configFileUpload = {
 	safeFileNames: false,
 };
 
+
+
+
 AdminRouter.use(adminAuthMiddleware)
-
-AdminRouter.post("/login", LoginPostController)
-
 // Category
 AdminRouter.get("/categories", CategoriesGetController)
 AdminRouter.post("/categories/new", CreateCategoryPostController)

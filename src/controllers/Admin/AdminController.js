@@ -10,7 +10,9 @@ module.exports = class AdminController{
             const data = await AdminSignInValidation(req.body, res.error);
     
             const admin = await req.db.admins.findOne({
-                admin_login: data.login
+                where: {
+                    admin_login: data.login
+                }
             })
     
             if(!admin) throw new res.error("Admin is not found")

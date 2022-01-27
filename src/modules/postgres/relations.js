@@ -4,7 +4,7 @@ module.exports = async (db) => {
     await db.admins.hasMany(db.sessions, {
         foreignKey: {
             name: "admin_id",
-            allowNull: false
+            allowNull: false,
         }
     })
 

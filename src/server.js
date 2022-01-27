@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const cors = require("cors");
 const app = express();
 const postgres = require("./modules/postgres/pg");
 const customErrorMiddleware = require("./middlewares/customErrorMiddleware");
@@ -8,9 +9,10 @@ const errorHandler = require("./helpers/errorHandler");
 
 async function server(port) {
 	try {
-		app.listen(process.env.PORT || 3000, () =>
-			console.log(`SERVER READY ${port || 3000}`)
+		app.listen(port || 8600, () =>
+			console.log(`SERVER READY ${port || 8600}`)
 		);
+		app.use(cors())
 
 		const db = await postgres();
 

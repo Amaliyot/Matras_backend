@@ -8,6 +8,6 @@ module.exports = async (sequelize, Sequelize) => {
 		session_user_agent: {
 			type: Sequelize.STRING,
 			allowNull: false,
-		},
+		}
 	});
 };
